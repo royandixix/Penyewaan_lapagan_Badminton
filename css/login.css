@@ -1,0 +1,57 @@
+body {
+    background-color: #f8f9fa;
+    background-image: url(img/istockphoto-1390191053-2048x2048.jpg);
+}
+
+.login-card {
+    max-width: 400px;
+    /* Mengatur lebar maksimum */
+    margin: auto;
+    /* Mengatur margin agar berada di tengah */
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    background-color: white;
+}
+
+.login-card-description {
+    text-align: center;
+    /* Menyusun deskripsi di tengah */
+    margin-bottom: 20px;
+}
+
+.login-btn {
+    background-color: #007bff;
+    /* Warna tombol primary */
+    color: white;
+    transition: background-color 0.3s;
+    /* Transisi untuk efek hover */
+}
+
+.login-btn:hover {
+    background-color: #0056b3;
+    /* Warna tombol saat hover */
+}
+
+.forgot-password-link {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.forgot-password-link:hover {
+    text-decoration: underline;
+}
+
+.login-card-footer-nav a {
+    color: #6c757d;
+}
+
+.login-card-footer-text {
+    text-align: center;
+    /* Menyusun footer teks di tengah */
+    margin-top: 20px;
+}
+
+
+
+
