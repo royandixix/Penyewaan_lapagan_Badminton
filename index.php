@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-// Jika user belum login, redirect ke halaman login
+// Pastikan user sudah login
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit;
@@ -16,7 +16,7 @@ if (!$db) {
     die("Koneksi database gagal: " . mysqli_connect_error());
 }
 
-// Inisialisasi variabel untuk pesan
+// Pesan dan error
 $message = '';
 $error = '';
 
@@ -31,34 +31,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $nama = mysqli_real_escape_string($db, $_POST['nama']);
         $alamat = mysqli_real_escape_string($db, $_POST['alamat']);
 
-        // Gunakan NULL jika user tidak login
-        $userId = isset($_SESSION['user_id']) ? mysqli_real_escape_string($db, $_SESSION['user_id']) : "NULL";
+        // Gunakan ID pengguna yang ada
+        $userId = $_SESSION['user_id']; // Pastikan pengguna sudah login
 
-        if ($userId) {
-            // Insert data pemesanan
-            $query = "INSERT INTO pemesanan_212096 (jam_mulai_212096, jam_selesai_212096, id_pengguna_212096, id_lapangan_212096, nama_212096, alamat_212096) 
-                      VALUES ('$startTime', '$endTime', '$userId', '$courtId', '$nama', '$alamat')";
-            if (mysqli_query($db, $query)) {
-                // Setelah berhasil, update kolom konfirmasi dengan 'Yes'
-                $lastInsertId = mysqli_insert_id($db); // Mendapatkan ID pemesanan terakhir
-                $confirmQuery = "UPDATE pemesanan_212096 SET konfirmasi = 'Yes' WHERE id_pemesanan_212096 = $lastInsertId";
-                mysqli_query($db, $confirmQuery);
+        // Menentukan status konfirmasi sebagai 0 (belum dikonfirmasi)
+        $confirm = 0;
 
-                // Pesan keberhasilan
-                $message = 'Pemesanan berhasil, status konfirmasi: Yes';
-            } else {
-                $error = 'Pemesanan gagal.';
-            }
+        // Query insert ke pemesanan
+        $query = "INSERT INTO pemesanan_212096 (idpengguna_212096, idlapangan_212096, tanggalpemesanan_212096, jammulai_212096, jamselesai_212096, konfirmasi_212096, nama_212096, alamat_212096)
+                  VALUES ('$userId', '$courtId', NOW(), '$startTime', '$endTime', '$confirm', '$nama', '$alamat')";
+
+        if (mysqli_query($db, $query)) {
+            // Pesan keberhasilan
+            $message = 'Pemesanan berhasil, status konfirmasi: 0 (belum dikonfirmasi)';
         } else {
-            $error = 'ID pengguna tidak valid atau tidak ditemukan.';
+            $error = 'Pemesanan gagal: ' . mysqli_error($db);
         }
+    } else {
+        $error = 'Data tidak lengkap.';
     }
 }
 
 // Query untuk menampilkan data lapangan
 $courtQuery = "SELECT * FROM lapangan_212096";
 $courtResult = mysqli_query($db, $courtQuery);
-?>>
+?>
 
 <div class="container">
     <main class="flex-shrink-0">
@@ -82,7 +79,7 @@ $courtResult = mysqli_query($db, $courtQuery);
         <!-- Menampilkan daftar lapangan -->
         <section id="courts" class="py-5 bg-light">
             <div>
-                <h3 class="mb-5">Daftar Lapangan</h3>
+                <h3 id="target-element" class="mb-5">Daftar Lapangan</h3>
                 <div class="row">
                     <?php if (mysqli_num_rows($courtResult) > 0): ?>
                         <?php while ($court = mysqli_fetch_assoc($courtResult)): ?>
@@ -145,9 +142,7 @@ $courtResult = mysqli_query($db, $courtQuery);
                         <input type="text" class="form-control" id="courtPrice" disabled>
                     </div>
 
-                    <input type="hidden" name="booking_date" value="<?= date('Y-m-d') ?>">
                     <input type="hidden" name="court_id" id="courtId">
-
                     <button type="submit" class="btn btn-primary">Konfirmasi</button>
                 </form>
             </div>
@@ -171,23 +166,25 @@ $courtResult = mysqli_query($db, $courtQuery);
         var price = button.data('price');
 
         var modal = $(this);
-        modal.find('.modal-body #courtPrice').val(price);
-        modal.find('.modal-body #courtId').val(courtId);
+        modal.find('#courtId').val(courtId);
+        modal.find('#courtPrice').val(price);
     });
 
-    // Menampilkan SweetAlert saat pemesanan berhasil atau gagal
+    // Menampilkan notifikasi setelah pengiriman formulir berhasil
     <?php if ($message): ?>
         Swal.fire({
-            title: 'Pemesanan Berhasil!',
-            text: '<?= $message ?>',
             icon: 'success',
+            title: 'Pemesanan Berhasil',
+            text: '<?= $message ?>',
             confirmButtonText: 'OK'
         });
-    <?php elseif ($error): ?>
+    <?php endif; ?>
+
+    <?php if ($error): ?>
         Swal.fire({
-            title: 'Pemesanan Gagal!',
-            text: '<?= $error ?>',
             icon: 'error',
+            title: 'Pemesanan Gagal',
+            text: '<?= $error ?>',
             confirmButtonText: 'OK'
         });
     <?php endif; ?>

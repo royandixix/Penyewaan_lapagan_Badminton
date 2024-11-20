@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 31, 2024 at 03:44 AM
+-- Generation Time: Nov 20, 2024 at 10:38 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.1.25
 
@@ -82,8 +82,19 @@ CREATE TABLE `pemesanan_212096` (
   `tanggalpemesanan_212096` datetime NOT NULL,
   `jammulai_212096` time NOT NULL,
   `jamselesai_212096` time NOT NULL,
-  `konfirmasi` tinyint(1) NOT NULL DEFAULT 0
+  `konfirmasi_212096` tinyint(1) NOT NULL DEFAULT 0,
+  `nama_212096` varchar(255) NOT NULL,
+  `alamat_212096` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `pemesanan_212096`
+--
+
+INSERT INTO `pemesanan_212096` (`idpemesanan_212096`, `idpengguna_212096`, `idlapangan_212096`, `tanggalpemesanan_212096`, `jammulai_212096`, `jamselesai_212096`, `konfirmasi_212096`, `nama_212096`, `alamat_212096`) VALUES
+(1, 1, 1, '2024-11-21 10:00:00', '10:00:00', '11:00:00', 0, '', ''),
+(2, 1, 1, '2024-11-21 04:23:42', '10:10:00', '11:11:00', 1, '', ''),
+(3, 1, 1, '2024-11-21 05:20:49', '11:10:00', '01:10:00', 0, 'royandi', 'mamuju');
 
 -- --------------------------------------------------------
 
@@ -172,7 +183,7 @@ ALTER TABLE `pembayaran_212096`
 -- AUTO_INCREMENT for table `pemesanan_212096`
 --
 ALTER TABLE `pemesanan_212096`
-  MODIFY `idpemesanan_212096` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idpemesanan_212096` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `pengguna_212096`

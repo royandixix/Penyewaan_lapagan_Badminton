@@ -25,6 +25,8 @@ include 'config/koneksi.php'; // Sertakan koneksi ke database
     <link rel="stylesheet" href="dhasboard/assets/plugins/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 
     <link rel="stylesheet" href="dhasboard/assets/css/style.css">
 </head>
@@ -317,8 +319,8 @@ include 'config/koneksi.php'; // Sertakan koneksi ke database
                 <thead>
                     <tr>
                         <th>No.</th>
-                        <th>Nama</th> <!-- Menambahkan kolom Nama -->
-                        <th>Alamat</th> <!-- Menambahkan kolom Alamat -->
+                        <th>Nama</th>
+                        <th>Alamat</th>
                         <th>Jam Mulai</th>
                         <th>Jam Selesai</th>
                         <th>Konfirmasi</th>
@@ -328,32 +330,52 @@ include 'config/koneksi.php'; // Sertakan koneksi ke database
                     <?php
                     include 'config/koneksi.php'; // Sertakan koneksi ke database
 
+                    // Pastikan koneksi berhasil
+                    if (!$db) {
+                        die("Koneksi gagal: " . mysqli_connect_error());
+                    }
+
                     // Ambil data dari tabel pemesanan_212096
                     $query = "SELECT * FROM pemesanan_212096";
                     $result = mysqli_query($db, $query);
 
-                    $rows = [];
-                    if ($result) {
-                        while ($row = mysqli_fetch_assoc($result)) {
-                            $rows[] = $row;
-                        }
-                    } else {
+                    // Pastikan query berhasil
+                    if (!$result) {
                         echo "Error: " . mysqli_error($db);
+                    } else {
+                        $no = 1; // Penomoran mulai dari 1
+                        while ($row = mysqli_fetch_assoc($result)) {
+                    ?>
+                            <tr>
+                                <td><?php echo $no++; ?></td>
+                                <td><?php echo htmlspecialchars($row['nama_212096'] ?? 'Data tidak tersedia'); ?></td> <!-- Menampilkan Nama -->
+                                <td><?php echo htmlspecialchars($row['alamat_212096'] ?? 'Data tidak tersedia'); ?></td> <!-- Menampilkan Alamat -->
+                                <td><?php echo htmlspecialchars($row['jammulai_212096'] ?? 'Data tidak tersedia'); ?></td> <!-- Menampilkan Jam Mulai -->
+                                <td><?php echo htmlspecialchars($row['jamselesai_212096'] ?? 'Data tidak tersedia'); ?></td> <!-- Menampilkan Jam Selesai -->
+                                <td>
+                                    <?php
+                                    // Debugging: tampilkan nilai konfirmasi
+                                    echo 'Konfirmasi: ' . $row['konfirmasi_212096'];
+
+                                    // Menampilkan ikon ceklis jika konfirmasi = 1, jika tidak tampilkan ikon silang
+                                    if ($row['konfirmasi_212096'] == 1) {
+                                        echo '<i class="fas fa-check" style="color: green;"></i>'; // Ikon ceklis berwarna hijau
+                                    } else {
+                                        echo '<i class="fas fa-times" style="color: red;"></i>'; // Ikon silang berwarna merah
+                                    }
+                                    ?>
+                                </td> <!-- Menampilkan ikon ceklis atau silang berdasarkan status konfirmasi -->
+
+                            </tr>
+                    <?php
+                        }
                     }
 
-                    $no = 1; // Penomoran mulai dari 1
-                    foreach ($rows as $row):
+                    // Tutup koneksi database setelah selesai
+                    mysqli_close($db);
                     ?>
-                        <tr>
-                            <td><?php echo $no++; ?></td>
-                            <td><?php echo htmlspecialchars($row['nama_212096']); ?></td> <!-- Menampilkan Nama -->
-                            <td><?php echo htmlspecialchars($row['alamat_212096']); ?></td> <!-- Menampilkan Alamat -->
-                            <td><?php echo htmlspecialchars($row['jam_mulai_212096']); ?></td>
-                            <td><?php echo htmlspecialchars($row['jam_selesai_212096']); ?></td>
-                            <td><?php echo htmlspecialchars($row['konfirmasi']); ?></td>
-                        </tr>
-                    <?php endforeach; ?>
                 </tbody>
+
             </table>
         </div>
 
